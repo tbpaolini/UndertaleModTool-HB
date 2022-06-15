@@ -98,6 +98,11 @@ namespace UndertaleModLib.Models
             Solid = reader.ReadBoolean();
             Depth = reader.ReadInt32();
             Persistent = reader.ReadBoolean();
+            // Heartbound: Fix for "Invalid value for resource ID" while reading the OBJT chunk
+            // Apparently there are additional 4 bytes between the 'Persistent' flag and the 'Parent ID'.
+            // The meaning of those bytes is unknown, but by skipping them the chunk should load properly.
+            reader.ReadInt32();
+            //  End of the fix
             _ParentId = new UndertaleResourceById<UndertaleGameObject, UndertaleChunkOBJT>();
             int parent = reader.ReadInt32();
             if (parent == -100)
