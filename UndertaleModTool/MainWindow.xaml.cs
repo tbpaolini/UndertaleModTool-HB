@@ -152,7 +152,7 @@ namespace UndertaleModTool
         private Task scriptSetupTask;
 
         // Version info
-        public static string Edition = "";
+        public static string Edition = "Heartbound";
         public static string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString() + (Edition != "" ? "-" + Edition : "");
 
         public MainWindow()
