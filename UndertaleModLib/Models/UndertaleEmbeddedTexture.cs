@@ -33,6 +33,10 @@ namespace UndertaleModLib.Models
             Scaled = reader.ReadUInt32();
             if (reader.undertaleData.GeneralInfo.Major >= 2)
                 GeneratedMips = reader.ReadUInt32();
+            // Heartbound fix: A new (and unknown) 4 bytes value is present at the texture's header.
+            // So it is being skipped in order to prevent misalignment.
+            reader.ReadUInt32();
+            // End of the fix
             TextureData = reader.ReadUndertaleObjectPointer<TexData>();
         }
 
@@ -123,7 +127,7 @@ namespace UndertaleModLib.Models
 
                         // Need to fully decompress and convert the QOI data to PNG for compatibility purposes (at least for now)
                         using MemoryStream bufferWrapper = new MemoryStream(reader.Buffer);
-                        bufferWrapper.Seek(reader.Offset, SeekOrigin.Begin);
+                        bufferWrapper.Seek(reader.Offset+4, SeekOrigin.Begin);  // Heartbound fix: The file started 4 bytes before where it should, so 4 is being added to the offset.
                         using MemoryStream result = new MemoryStream(1024);
                         BZip2.Decompress(bufferWrapper, result, false);
                         reader.Position = (uint)bufferWrapper.Position;
