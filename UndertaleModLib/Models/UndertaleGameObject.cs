@@ -28,6 +28,7 @@ namespace UndertaleModLib.Models
         public bool Solid { get; set; } = false;
         public int Depth { get; set; } = 0;
         public bool Persistent { get; set; } = false;
+        public bool UnknownObjectFlag { get; set; } = false;
         public UndertaleGameObject ParentId { get => _ParentId.Resource; set { _ParentId.Resource = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ParentId))); } }
         public UndertaleSprite TextureMaskId { get => _TextureMaskId.Resource; set { _TextureMaskId.Resource = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextureMaskId))); } }
         public bool UsesPhysics { get; set; } = false;
@@ -60,6 +61,7 @@ namespace UndertaleModLib.Models
             writer.Write(Solid);
             writer.Write(Depth);
             writer.Write(Persistent);
+            writer.Write(UnknownObjectFlag);
             // This apparently has a different notation than everything else...
             if (_ParentId.Resource == null)
             {
@@ -101,7 +103,7 @@ namespace UndertaleModLib.Models
             // Heartbound: Fix for "Invalid value for resource ID" while reading the OBJT chunk
             // Apparently there are additional 4 bytes between the 'Persistent' flag and the 'Parent ID'.
             // The meaning of those bytes is unknown, but by skipping them the chunk should load properly.
-            reader.ReadInt32();
+            UnknownObjectFlag = reader.ReadBoolean();
             //  End of the fix
             _ParentId = new UndertaleResourceById<UndertaleGameObject, UndertaleChunkOBJT>();
             int parent = reader.ReadInt32();

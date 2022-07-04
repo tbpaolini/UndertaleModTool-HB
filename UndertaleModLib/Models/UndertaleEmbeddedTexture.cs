@@ -18,6 +18,7 @@ namespace UndertaleModLib.Models
         public UndertaleString Name { get; set; }
         public uint Scaled { get; set; } = 0;
         public uint GeneratedMips { get; set; }
+        public uint UnknownTextureProperty { get; set; } = 0;
         public TexData TextureData { get; set; } = new TexData();
 
         public void Serialize(UndertaleWriter writer)
@@ -25,6 +26,7 @@ namespace UndertaleModLib.Models
             writer.Write(Scaled);
             if (writer.undertaleData.GeneralInfo.Major >= 2)
                 writer.Write(GeneratedMips);
+            writer.Write(UnknownTextureProperty);
             writer.WriteUndertaleObjectPointer(TextureData);
         }
 
@@ -35,7 +37,7 @@ namespace UndertaleModLib.Models
                 GeneratedMips = reader.ReadUInt32();
             // Heartbound fix: A new (and unknown) 4 bytes value is present at the texture's header.
             // So it is being skipped in order to prevent misalignment.
-            reader.ReadUInt32();
+            UnknownTextureProperty = reader.ReadUInt32();
             // End of the fix
             TextureData = reader.ReadUndertaleObjectPointer<TexData>();
         }
@@ -95,6 +97,9 @@ namespace UndertaleModLib.Models
                         using MemoryStream input = new MemoryStream(data);
                         using MemoryStream output = new MemoryStream(1024);
                         BZip2.Compress(input, output, false, 9);
+                        // Heartbound FIX: Write the uncompressed data size before the data itself
+                        writer.Write((uint)data.Length);
+                        // End of the fix
                         writer.Write(output.ToArray());
                         bmp.Dispose();
                     }

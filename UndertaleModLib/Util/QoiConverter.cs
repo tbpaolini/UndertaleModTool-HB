@@ -239,8 +239,11 @@ namespace UndertaleModLib.Util
 
             bmp.UnlockBits(data);
 
-            // Add padding
-            resPos += 4;
+            // Heartbound fix: Removing the padding makes the game to successfully load the textures
+            // // Add padding
+            // resPos += 4;
+            res[resPos-1] |= 1; // For reasons beyond me, the last bit of the data needs to be 1 for it to always works in-game
+            // End of the fix
 
             // Write final length
             int length = resPos - 12;
