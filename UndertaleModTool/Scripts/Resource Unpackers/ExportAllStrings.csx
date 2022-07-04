@@ -8,7 +8,7 @@ using UndertaleModLib.Util;
 
 EnsureDataLoaded();
 
-string exportFolder = PromptChooseDirectory();
+string exportFolder = PromptChooseDirectory() + "/";
 if (exportFolder == null)
     throw new ScriptException("The export folder was not set.");
 
